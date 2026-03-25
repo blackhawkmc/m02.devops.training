@@ -4,13 +4,55 @@ agent:
   machine:
     type: f1-standard-2
     os_image: ubuntu2004
+
+global_job_config:
+  prologue:
+    commands:
+      - sem-version python 3.12
+      - checkout
+
 blocks:
-  - name: Build
+  - name: Install dependencies
     task:
       jobs:
-        - name: Make app
+        - name: pip install
           commands:
-            - checkout
-            - make app
-            - artifacts push workflow app
-            - echo hello
+            - cache restore
+            - pip install pytest requests flask coverage locust
+            - cache store
+
+  - name: Unit tests
+    dependencies:
+      - Install dependencies
+    task:
+      jobs:
+        - name: TDD and unit testing
+          commands:
+            - cache restore
+            - (cd 1-tdd && python -m pytest test_factorial.py -v)
+            - (cd 2-unit-testing && python -m pytest test_math_sum.py -v)
+
+  - name: Integration tests
+    dependencies:
+      - Install dependencies
+    task:
+      jobs:
+        - name: Integration and mocking
+          commands:
+            - cache restore
+            - (cd 3-integration-testing && python -m pytest test_integration.py -v)
+            - (cd 6-mocking && python -m pytest test_weather_service.py -v)
+            - (cd 10-database-testing && python -m pytest test_database.py -v)
+
+  - name: End-to-end tests
+    dependencies:
+      - Unit tests
+      - Integration tests
+    task:
+      jobs:
+        - name: E2E
+          commands:
+            - cache restore
+            - cd 4-e2e && nohup python app.py &
+            - sleep 3
+            - python -m pytest test_e2e.py -v
