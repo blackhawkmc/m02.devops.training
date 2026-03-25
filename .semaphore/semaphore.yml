@@ -1,9 +1,9 @@
 version: v1.0
 name: Demo CI pipeline
 agent:
-    machine:
-      type: f1-standard-2
-      os_image: ubuntu2404
+  machine:
+    type: f1-standard-4
+    os_image: ubuntu2404
 global_job_config:
   prologue:
     commands:
@@ -19,10 +19,6 @@ blocks:
             - cache restore
             - pip install pytest requests flask coverage locust
             - cache store
-      agent:
-        machine:
-          type: e1-standard-2
-          os_image: ''
   - name: Unit tests
     dependencies:
       - Install dependencies
