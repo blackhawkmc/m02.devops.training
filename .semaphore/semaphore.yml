@@ -3,14 +3,12 @@ name: Demo CI pipeline
 agent:
   machine:
     type: f1-standard-2
-    os_image: ubuntu2004
-
+    os_image: ubuntu2404
 global_job_config:
   prologue:
     commands:
       - sem-version python 3.12
       - checkout
-
 blocks:
   - name: Install dependencies
     dependencies: []
@@ -21,7 +19,10 @@ blocks:
             - cache restore
             - pip install pytest requests flask coverage locust
             - cache store
-
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ''
   - name: Unit tests
     dependencies:
       - Install dependencies
@@ -32,7 +33,6 @@ blocks:
             - cache restore
             - (cd 1-tdd && python -m pytest test_factorial.py -v)
             - (cd 2-unit-testing && python -m pytest test_math_sum.py -v)
-
   - name: Integration tests
     dependencies:
       - Install dependencies
@@ -44,7 +44,6 @@ blocks:
             - (cd 3-integration-testing && python -m pytest test_integration.py -v)
             - (cd 6-mocking && python -m pytest test_weather_service.py -v)
             - (cd 10-database-testing && python -m pytest test_database.py -v)
-
   - name: End-to-end tests
     dependencies:
       - Unit tests
