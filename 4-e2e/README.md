@@ -38,4 +38,4 @@ source venv/bin/activate
 Add a new endpoint using TDD:
 - GET `/history` - returns list of all calculations performed
 - Add corresponding test first
- 
+

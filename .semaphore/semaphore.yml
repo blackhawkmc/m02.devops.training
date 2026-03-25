@@ -14,4 +14,3 @@ blocks:
             - make app
             - artifacts push workflow app
             - echo hello
-            
