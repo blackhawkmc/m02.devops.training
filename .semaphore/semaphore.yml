@@ -2,8 +2,9 @@ version: v1.0
 name: Demo CI pipeline
 agent:
   machine:
-    type: f1-standard-4
-    os_image: ubuntu2404
+    type: f1-standard-2
+    os_image: ubuntu2004
+
 global_job_config:
   prologue:
     commands:
@@ -49,6 +50,7 @@ blocks:
         - name: E2E
           commands:
             - cache restore
-            - cd 4-e2e && nohup python app.py &
+            - cd 4-e2e
+            - nohup python app.py &
             - sleep 3
             - python -m pytest test_e2e.py -v
